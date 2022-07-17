@@ -5,22 +5,35 @@
 # Based on https://github.com/Jahfry/Miscellaneous/blob/main/TrueNAS_Scale_driverctl.md
 #
 
-BACKUP_FILES="/usr/share/truenas/webui/609-es2015.f059fa779e0b83eaa150.js /usr/share/truenas/webui/609-es5.f059fa779e0b83eaa150.js /usr/share/truenas/webui/715-es2015.b3b1eb8aed99ad4e4035.js /usr/share/truenas/webui/715-es5.b3b1eb8aed99ad4e4035.js /usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/config.py"
+# Find relevant files in this build
+THIS_AVAILABLE_GPUS=$(grep -rnl 'this.availableGpus' /usr/share/truenas/webui | grep -v .map)
+E_AVAILABLE_GPUS=$(grep -rnl 'e.availableGpus' /usr/share/truenas/webui)
+NAME_GPUS=$(grep -rnl 'name:"gpus"' /usr/share/truenas/webui)
+PY_CONFIG="/usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/config.py"
+BACKUP_FILES="$THIS_AVAILABLE_GPUS $E_AVAILABLE_GPUS $NAME_GPUS $PY_CONFIG"
 
 # Make backups of originals
 for f in $BACKUP_FILES; do
-	target="${f}.orig"
-	if [[ ! -f "$target" ]]; then
-		cp -a "$f" "$target"
-	fi
+  target="${f}.orig"
+  if [[ ! -f "$target" ]]; then
+    cp -a "$f" "$target"
+  fi
 done
 
 # Patch the files
-perl -i -pe 's|\Qif([...t].length>=(null===(i=this.availableGpus)\E|if([...t].length>(null===(i=this.availableGpus)|g' /usr/share/truenas/webui/609-es2015.f059fa779e0b83eaa150.js
-perl -i -pe 's|\Qif(t(a).length>=(null===(o=e.availableGpus)\E|if(t(a).length>(null===(o=e.availableGpus)|g' /usr/share/truenas/webui/609-es5.f059fa779e0b83eaa150.js
-perl -i -pe 's|\Q{name:"gpus"});if(i.length&&i.length>=o.options.length)\E|{name:"gpus"});if(i.length&&i.length>o.options.length)|g' /usr/share/truenas/webui/715-es2015.b3b1eb8aed99ad4e4035.js
-perl -i -pe 's|\Q{name:"gpus"});if(r.length&&r.length>=c.options.length)\E|{name:"gpus"});if(r.length&&r.length>c.options.length)|g' /usr/share/truenas/webui/715-es5.b3b1eb8aed99ad4e4035.js
-perl -i -pe 's|\Qif len(available - provided) < 1|if False and len(available - provided) < 1|g' /usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/config.py
+for f in $THIS_AVAILABLE_GPUS; do
+  perl -i -pe 's|\Qif([...t].length>=(null===(i=this.availableGpus)\E|if([...t].length>(null===(i=this.availableGpus)|g' "$f"
+done
+
+for f in $E_AVAILABLE_GPUS; do
+  perl -i -pe 's|\Qif(t(a).length>=(null===(o=e.availableGpus)\E|if(t(a).length>(null===(o=e.availableGpus)|g' "$f"
+done
+
+for f in $NAME_GPUS; do
+  perl -i -pe 's|\Q{name:"gpus"});if(i.length&&i.length>=o.options.length)\E|{name:"gpus"});if(i.length&&i.length>o.options.length)|g' "$f"
+done
+
+perl -i -pe 's|\Qif len(available - provided) < 1|if False and len(available - provided) < 1|g' "$PY_CONFIG"
 
 # Show diffs
 for f in $BACKUP_FILES; do
