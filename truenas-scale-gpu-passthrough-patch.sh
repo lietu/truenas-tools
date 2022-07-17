@@ -8,7 +8,7 @@
 BACKUP_FILES="/usr/share/truenas/webui/609-es2015.f059fa779e0b83eaa150.js /usr/share/truenas/webui/609-es5.f059fa779e0b83eaa150.js /usr/share/truenas/webui/715-es2015.b3b1eb8aed99ad4e4035.js /usr/share/truenas/webui/715-es5.b3b1eb8aed99ad4e4035.js /usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/config.py"
 
 # Make backups of originals
-for f in BACKUP_FILES; do
+for f in $BACKUP_FILES; do
 	target="${f}.orig"
 	if [[ ! -f "$target" ]]; then
 		cp -a "$f" "$target"
@@ -23,7 +23,7 @@ perl -i -pe 's|\Q{name:"gpus"});if(r.length&&r.length>=c.options.length)\E|{name
 perl -i -pe 's|\Qif len(available - provided) < 1|if False and len(available - provided) < 1|g' /usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/config.py
 
 # Show diffs
-for f in BACKUP_FILES; do
+for f in $BACKUP_FILES; do
 	orig="${f}.orig"
 	echo
 	echo "--- Changes for $(basename $f) ---"
