@@ -6,9 +6,9 @@
 #
 
 # Find relevant files in this build
-THIS_AVAILABLE_GPUS=$(grep -rnl 'this.availableGpus' /usr/share/truenas/webui | grep -v .map)
-E_AVAILABLE_GPUS=$(grep -rnl 'e.availableGpus' /usr/share/truenas/webui)
-NAME_GPUS=$(grep -rnl 'name:"gpus"' /usr/share/truenas/webui)
+THIS_AVAILABLE_GPUS=$(grep -rnl 'this.availableGpus' /usr/share/truenas/webui | grep -v .map | grep -v .orig)
+E_AVAILABLE_GPUS=$(grep -rnl 'e.availableGpus' /usr/share/truenas/webui | grep -v .orig)
+NAME_GPUS=$(grep -rnl 'name:"gpus"' /usr/share/truenas/webui | grep -v .orig)
 PY_CONFIG="/usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/config.py"
 BACKUP_FILES="$THIS_AVAILABLE_GPUS $E_AVAILABLE_GPUS $NAME_GPUS $PY_CONFIG"
 
@@ -40,7 +40,7 @@ for f in $BACKUP_FILES; do
 	orig="${f}.orig"
 	echo
 	echo "--- Changes for $(basename $f) ---"
-	diff "$orig" "$f"
+	diff -y --suppress-common-lines --speed-large-files "$orig" "$f"
 	echo
 done
 
