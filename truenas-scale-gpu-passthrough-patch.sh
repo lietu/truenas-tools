@@ -47,6 +47,19 @@ done
 # Clear compile cache for Python
 rm -rf /usr/lib/python3/dist-packages/middlewared/plugins/system_advanced/__pycache__
 
+# Update Grub config to release the GPU
+midclt call system.advanced.update '{"kernel_extra_options": "vga=off video=efifb:off,vesafb:off"}'
+update-grub
+
+echo
+echo "GPU Passthrough patches done"
+echo
+echo "Restarting WebUI momentarily, you will likely need to reboot the entire system to activate new boot configuration."
+echo
+
+sleep 5
+
 # Restart services
 service middlewared restart
 service nginx restart
+
