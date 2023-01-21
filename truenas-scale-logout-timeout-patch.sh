@@ -4,6 +4,11 @@
 #
 # Based on https://www.truenas.com/community/threads/how-often-are-you-auto-logged-out.93614/#post-698140
 #
+# Use from TrueNAS Shell like:
+#   wget https://raw.githubusercontent.com/lietu/truenas-tools/main/truenas-scale-logout-timeout-patch.sh
+#   chmod +x truenas-scale-logout-timeout-patch.sh
+#   ./truenas-scale-logout-timeout-patch.sh [timeoutSeconds]
+#
 
 # The wanted timeout can be given as an argument in seconds
 TIMEOUT="${1:-28800}"
