@@ -4,8 +4,8 @@
 #
 # Use from TrueNAS Shell like:
 #   wget https://raw.githubusercontent.com/lietu/truenas-tools/main/truenas-scale-arc-limit.sh
-#   chmod +x truenas-scale-logout-arc-limit.sh
-#   ./truenas-scale-logout-arc-limit.sh [limitGB]
+#   chmod +x truenas-scale-arc-limit.sh
+#   ./truenas-scale-arc-limit.sh [limitGB]
 #
 
 
